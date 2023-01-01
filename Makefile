@@ -1,7 +1,7 @@
 build:
-	docker-compose up --build
+	docker compose up --build
 stop:
-	docker-compose stop
+	docker compose stop
 
 clean:
-	docker-compose down -v --rmi all
+	docker compose down -v --rmi all
