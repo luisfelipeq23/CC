@@ -1,41 +1,70 @@
 version: '3'
 services:
   frontend:
-    build: .
+    build: ./frontend
     network: cc
+    restart: always
     ports:
       - 8000:8000
     run:
       - apt-get update && apt-get install -y keycloak python3 python3-pip
       - pip3 install django
+    depends_on: db
   kafka:
-    build: .
+    build: ./kafka
+    image: 'bitnami/zookeeper:latest'
+    restart: always
     network: cc
-    run:
-      - apt-get update && apt-get install -y kafka python3 python3-pip
-      - pip3 install django
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "pendientes:1:1,completados:1:1"
+    depends_on:
+      - zookeeper
+      - db
   zookeeper:
-    build: .
+    build: ./zookeeper
+    image: 'bitnami/zookeeper:latest'
+    restart: always
     network: cc
-    run:
-      - apt-get update && apt-get install -y zookeeper python3 python3-pip
-      - pip3 install django
+    depends_on: db
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888
   db:
-    build: .
+    build: ./db
+    image: postgres
+    restart: always
     network: cc
     run:
-      - apt-get update && apt-get install -y postgresql python3 python3-pip
+      - apt-get update && apt-get install -y python3 python3-pip
       - pip3 install django
+    environment:
+      - POSTGRES_USER=cloudcomputing-
+      - POSTGRES_PASSWORD=cloudcomputing-
+      - POSTGRES_DB=cc_db
+    ports:
+      - 5432:5432
+    depends_on: db
   observer:
-    build: .
+    build: ./observer
     network: cc
+    restart: always
     run:
       - apt-get update && apt-get install -y python3 python3-pip
       - pip3 install django
+    depends_on: db
   worker:
-    build: .
+    build: ./worker
     network: cc
+    restart: always
     run:
       - apt-get update && apt-get install -y python3 python3-pip
       - pip3 install django
+    depends_on: db
 

@@ -1,0 +1,10 @@
+FROM ubuntu:latest
+
+RUN apt-get update && apt-get install -y python3 python3-pip && mkdir ./front_end && touch ./front_end/requirements.txt
+
+COPY . /front_end
+WORKDIR /front_end
+
+RUN pip3 install -r requirements.txt
+
+CMD ["echo", "Directorio creado"]
