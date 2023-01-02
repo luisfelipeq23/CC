@@ -5,10 +5,11 @@ services:
     restart: always
     ports:
       - 80:80
-    run:
+    command:
       - apt-get update && apt-get install -y keycloak python3 python3-pip
       - pip3 install django
-    depends_on: db
+    depends_on:
+      - db
     networks:
       - front_end
       - back_end
@@ -16,7 +17,8 @@ services:
     build: ./kafka
     image: 'bitnami/zookeeper:latest'
     restart: always
-    networks: back_end
+    networks:
+      - back_end
     ports:
       - "9092:9092"
     environment:
@@ -30,8 +32,10 @@ services:
     build: ./zookeeper
     image: 'bitnami/zookeeper:latest'
     restart: always
-    networks: back_end
-    depends_on: db
+    networks:
+      - back_end
+    depends_on:
+      - db
     ports:
       - "2181:2181"
     environment:
@@ -42,8 +46,9 @@ services:
     build: ./db
     image: postgres
     restart: always
-    networks: back_end
-    run:
+    networks:
+      - back_end
+    command:
       - apt-get update && apt-get install -y python3 python3-pip
       - pip3 install django
     environment:
@@ -52,12 +57,14 @@ services:
       - POSTGRES_DB=cc_db
     ports:
       - 5432:5432
-    depends_on: db
+    depends_on:
+      - db
   observer:
     build: ./observer
-    networks: back_end
+    networks:
+      - back_end
     restart: always
-    run:
+    command:
       - apt-get update && apt-get install -y python3 python3-pip
       - pip3 install django
     depends_on:
@@ -65,9 +72,10 @@ services:
         - kafka
   worker:
     build: ./worker
-    networks: back_end
+    networks:
+      - back_end
     restart: always
-    run:
+    command:
       - apt-get update && apt-get install -y python3 python3-pip
       - pip3 install django
     depends_on:
