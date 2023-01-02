@@ -1,10 +1,20 @@
-FROM ubuntu:latest
+FROM python:3.8
 
-RUN apt-get update && apt-get install -y python3 python3-pip && mkdir ./front_end && touch ./front_end/requirements.txt
+RUN apt-get update && apt-get install -y libpq-dev apache2
 
-COPY . /front_end
-WORKDIR /front_end
+COPY . /app
+WORKDIR /app
 
-RUN pip3 install -r requirements.txt
+RUN pip install -r requirements.txt
 
-CMD ["echo", "Directorio creado"]
+RUN a2enmod proxy_http
+RUN a2enmod proxy
+RUN a2enmod proxy_balancer
+RUN a2enmod lbmethod_byrequests
+
+COPY apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+
+EXPOSE 80
+
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+
