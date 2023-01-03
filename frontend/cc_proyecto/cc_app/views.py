@@ -1,3 +1,4 @@
+# Create your views here.
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
@@ -5,6 +6,11 @@ from rest_framework.response import Response
 import subprocess
 import requests
 import os
+
+@api_view(['GET'])
+def home(request):
+    return render(request, 'home.html')
+
 
 @api_view(['POST'])
 def download_and_execute_repo(request):

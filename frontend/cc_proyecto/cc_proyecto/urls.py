@@ -1,4 +1,4 @@
-"""app URL Configuration
+"""cc_proyecto URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.1/topics/http/urls/
@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from cc_app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.home, name='home'),
+    path('download/<str:repo_name>', views.download_and_execute_repo, name='download_exe_repo'),
 ]
