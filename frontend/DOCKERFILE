@@ -1,0 +1,18 @@
+FROM python:3
+RUN apt-get install python3-pip python3-django python-djangorestframework-*
+
+# Crear folder "frontend" in the container
+RUN cd /home/$USER/CC/CC/frontend
+WORKDIR /home/$USER/CC/CC/frontend
+
+# Actualizar pip
+RUN pip install --upgrade pip
+
+# Instalar dependencias listadas en 'requirements.txt' file y actualizarlas si es necesario
+COPY requirements.txt .
+RUN pip install --upgrade -r requirements.txt
+
+EXPOSE 8000
+
+#Ejecutar el comando docker
+CMD ["docker run -d -it -p 8000:8000 django-admin app"]
