@@ -1,2 +1,7 @@
-FROM python
+FROM ubuntu
+RUN apt-get install python3 pip
 RUN pip install virtualenv
+RUN virtualenv cc
+COPY . /cc
+RUN python3 ./manage.py runserver
+
