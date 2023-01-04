@@ -49,7 +49,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django-keycloak-auth.middleware.KeycloakMiddleware',
 ]
+
+# Exempt URIS
+# For example: ['core/banks', 'swagger']
+KEYCLOAK_EXEMPT_URIS = []
+KEYCLOAK_CONFIG = {
+    'KEYCLOAK_SERVER_URL': 'http://localhost:8080/auth',
+    'KEYCLOAK_REALM': 'TEST',
+    'KEYCLOAK_CLIENT_ID': 'cc_app',
+    'KEYCLOAK_CLIENT_SECRET_KEY': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+}
 
 ROOT_URLCONF = 'cc_proyecto.urls'
 

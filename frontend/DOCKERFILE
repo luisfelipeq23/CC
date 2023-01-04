@@ -1,7 +1,10 @@
 FROM ubuntu
 RUN apt-get install python3 pip
 RUN pip install virtualenv
-RUN virtualenv cc
+RUN cd /home/$USER
 COPY . /cc
-RUN python3 ./manage.py runserver
+RUN cd /home/$USER
+RUN virtualenv cc && source cc/bin/activate
+RUN pip install django djangorestframework psycopg2-binary django-keycloak-auth
+RUN python3 ./frontend/manage.py runserver
 
