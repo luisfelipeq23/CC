@@ -20,5 +20,5 @@ from cc_app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path('download/<str:repo_name>', views.download_and_execute_repo, name='download_exe_repo'),
+    path('download/', views.download_repo, name='download_repo'),
 ]

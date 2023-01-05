@@ -1,3 +1,10 @@
 from django.db import models
 
-# Create your models here.
+class Repo(models.Model):
+    nombre_repo = models.CharField(max_length=255)
+    url_repo = models.URLField()
+    estados = [("Pendiente", "En espera", "En Proceso", "Terminado")]
+    estado = models.CharField(choices=estados)
+
+    class Meta:
+        app_label = 'cc_app'

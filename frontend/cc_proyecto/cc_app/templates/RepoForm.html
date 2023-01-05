@@ -1,0 +1,9 @@
+{% if error %}
+  <div style="color:red"> {{ error }}</div>
+{% endif %}
+
+<form method="post" action="{% url 'download_repo' %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Descargar Repo">
+</form>
