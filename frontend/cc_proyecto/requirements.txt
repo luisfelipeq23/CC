@@ -1,3 +1,4 @@
 django=3.1.2
 djangorestframework=3.12.2
 psycopg2-binary=2.9.5
+virtualenv=20.13.0
