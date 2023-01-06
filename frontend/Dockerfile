@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM python3
 ENV TAG=template
 RUN apt-get update -y
 RUN apt-get install -y python3 pip
