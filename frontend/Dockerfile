@@ -1,8 +1,10 @@
-FROM python3
-WORKDIR /CC
-COPY . /CC
-RUN pip install --no-cache-dir -r frontend/cc_proyecto/requirements.txt
-ENV PORT=8000
-EXPOSE 8000
-RUN python ~/CC/frontend/manage.py makemigrations
-RUN python ~/CC/frontend/manage.py runserver
+FROM python:3
+WORKDIR /CC/CC/frontend
+COPY . /CC/CC/frontend/
+RUN pip install -r ./cc_proyecto/requirements.txt --no-cache-dir --root-user-action=ignore
+RUN bin/bash
+RUN source cc/bin/activate 
+#ENV PORT=8000
+#EXPOSE 8000
+#RUN python ~/frontend/cc_proyecto/manage.py makemigrations
+#sRUN python ~/frontend/cc_proyecto/manage.py runserver

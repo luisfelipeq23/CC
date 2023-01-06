@@ -89,10 +89,10 @@ WSGI_APPLICATION = 'cc_proyecto.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'cloud',
-        'HOST': '127.0.0.1',
+        'NAME': 'cc_db',
+        'USER': 'cc_user',
+        'PASSWORD': '',
+        'HOST': 'cc_db',
         'PORT': '5432',
     }
 }
