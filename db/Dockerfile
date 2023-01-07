@@ -1,8 +1,8 @@
 FROM postgres
+ENV POSTGRES_HOST_AUTH_METHOD false
 
 # Contraseña para el ususario 'postgres'
 ENV POSTGRES_PASSWORD ""
-ENV POSTGRES_HOST_AUTH_METHOD false
 #p0576r35ql
 
 # Se crea la base de datos
