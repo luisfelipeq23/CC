@@ -1,26 +1,45 @@
 version: '3'
 services:
-  db:
-    build:
-      context: ./db/
-      dockerfile: DOCKERFILE
-    image: postgres
-    environment:
-      - POSTGRES_USER=cloudcomputing
-      - POSTGRES_PASSWORD=cloudcomputing
-      - POSTGRES_DB=cc_db
-    ports:
-      - 5432:5432
   frontend:
-    build:
-      context: ./frontend/
-      dockerfile: DOCKERFILE
-    depends_on:
-      - db
-    volumes:
-      - .:/frontend/app
-    ports:
-      - "8000:8000"
+    image: python:3
+  kafka:
+    image: bitnami/kafka
+  zookeeper:
+    image: bitnami/zookeeper
+  db:
+    image: postgres
+  observer:
+    image: python
+  worker:
+    image: python
+networks:
+  cc_network:
+    driver: bridge
+
+
+# version: '3'
+# services:
+#   db:
+#     build:
+#       context: ./db/
+#       dockerfile: DOCKERFILE
+#     image: postgres
+#     environment:
+#       - POSTGRES_USER=cloudcomputing
+#       - POSTGRES_PASSWORD=cloudcomputing
+#       - POSTGRES_DB=cc_db
+#     ports:
+#       - 5432:5432
+#   frontend:
+#     build:
+#       context: ./frontend/
+#       dockerfile: DOCKERFILE
+#     depends_on:
+#       - db
+#     volumes:
+#       - .:/frontend/app
+#     ports:
+#       - "8000:8000"
 #networks:
 #  - front_end
 #  - back_end
