@@ -1,0 +1,7 @@
+FROM postgres:latest
+EXPOSE 5432
+RUN mkdir cc_db
+COPY startup.sh cc_db
+WORKDIR /cc_db
+RUN chown root startup.sh && chgrp root startup.sh && chmod 777 startup.sh
+CMD ["postgresql"]

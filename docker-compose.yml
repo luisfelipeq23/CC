@@ -1,97 +1,40 @@
-version: '3'
+version: "3.9"
 services:
-  frontend:
-    image: python:3
-  kafka:
-    image: bitnami/kafka
-  zookeeper:
-    image: bitnami/zookeeper
   db:
-    image: postgres
-  observer:
-    image: python
-  worker:
-    image: python
+    build: ./db/
+    image: cc_postgres
+    hostname: cc_postgres
+    container_name: cc_postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - cc_backend
+    ports:
+      - 5432:5432
+    command: postgres
+  frontend:
+    build: ./frontend/
+    container_name: cc_frontend
+    environment:
+     - DJANGO_SETTINGS_MODULE=cc_proyecto.settings
+    restart: always
+    image: cc_frontend
+    depends_on:
+      db:
+        condition: service_started
+    ports:
+      - 8000:8000
+    networks:
+      - cc_frontend
+      - cc_backend
+    command: bash -c "python manage.py makemigrations cc_proyecto && python manage.py migrate --no-input --run-syncdb && python manage.py runserver 0.0.0.0:8000"
 networks:
-  cc_network:
+  cc_backend:
+    name: cc_backend
     driver: bridge
-
-
-# version: '3'
-# services:
-#   db:
-#     build:
-#       context: ./db/
-#       dockerfile: DOCKERFILE
-#     image: postgres
-#     environment:
-#       - POSTGRES_USER=cloudcomputing
-#       - POSTGRES_PASSWORD=cloudcomputing
-#       - POSTGRES_DB=cc_db
-#     ports:
-#       - 5432:5432
-#   frontend:
-#     build:
-#       context: ./frontend/
-#       dockerfile: DOCKERFILE
-#     depends_on:
-#       - db
-#     volumes:
-#       - .:/frontend/app
-#     ports:
-#       - "8000:8000"
-#networks:
-#  - front_end
-#  - back_end
-  # kafka:
-  #   build: ./kafka
-  #   image: 'bitnami/zookeeper:latest'
-  #   restart: always
-  #   networks:
-  #     - back_end
-  #   ports:
-  #     - "9092:9092"
-  #   environment:
-  #     KAFKA_ADVERTISED_HOST_NAME: kafka
-  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  #     KAFKA_CREATE_TOPICS: "pendientes:1:1,completados:1:1"
-  #   depends_on:
-  #     - zookeeper
-  #     - db
-  # zookeeper:
-  #   build: ./zookeeper
-  #   image: 'bitnami/zookeeper:latest'
-  #   restart: always
-  #   networks:
-  #     - back_end
-  #   depends_on:
-  #     - db
-  #   ports:
-  #     - "2181:2181"
-  #   environment:
-  #     ZOO_MY_ID: 1
-  #     ZOO_PORT: 2181
-  #     ZOO_SERVERS: server.1=0.0.0.0:2888:3888
-  # observer:
-  #   build: ./observer
-  #   networks:
-  #     - back_end
-  #   restart: always
-  #   command:
-  #     - apt-get update && apt-get install -y python3 python3-pip
-  #     - pip3 install django
-  #   depends_on:
-  #       - db
-  #       - kafka
-  # worker:
-  #   build: ./worker
-  #   networks:
-  #     - back_end
-  #   restart: always
-  #   command:
-  #     - apt-get update && apt-get install -y python3 python3-pip
-  #     - pip3 install django
-  #   depends_on:
-  #       - db
-  #       - kafka
-
+  cc_frontend:
+    name: cc_frontend
+    driver: bridge

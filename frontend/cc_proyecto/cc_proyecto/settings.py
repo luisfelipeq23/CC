@@ -26,7 +26,7 @@ SECRET_KEY = 'srq@glu@+b)2yo5cj69q)w&94vt$27#(!rno*nudq(f+@gob+6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'cc_postgres', 'localhost']
 
 
 # Application definition
@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework'
+    'rest_framework',
+    'cc_proyecto'
 ]
 
 MIDDLEWARE = [
@@ -49,18 +50,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django-keycloak-auth.middleware.KeycloakMiddleware',
 ]
-
+#'django-keycloak-auth.middleware.KeycloakMiddleware',
 # Exempt URIS
 # For example: ['core/banks', 'swagger']
-KEYCLOAK_EXEMPT_URIS = []
+""" KEYCLOAK_EXEMPT_URIS = []
 KEYCLOAK_CONFIG = {
     'KEYCLOAK_SERVER_URL': 'http://localhost:8080/auth',
     'KEYCLOAK_REALM': 'TEST',
     'KEYCLOAK_CLIENT_ID': 'cc_app',
     'KEYCLOAK_CLIENT_SECRET_KEY': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
-}
+} """
 
 ROOT_URLCONF = 'cc_proyecto.urls'
 
@@ -89,10 +89,10 @@ WSGI_APPLICATION = 'cc_proyecto.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cc_db',
-        'USER': 'cc_user',
-        'PASSWORD': '',
-        'HOST': 'cc_db',
+        'NAME': "cc_cloud",
+        'USER': "cc_cloud",
+        'PASSWORD': "cc_cloud",
+        'HOST': '172.18.0.2',
         'PORT': '5432',
     }
 }

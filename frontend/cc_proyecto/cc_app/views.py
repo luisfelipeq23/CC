@@ -11,10 +11,9 @@ def download_repo(request):
     if request.method == 'POST':
         form = RepoForm(request.POST)
         if form.is_valid():
-            repo_name=form.cleaned_data['repo_name']
-            repo_url=form.cleaned_data['repo_url']
-            archivo=form.cleaned_data['archivo']
-            repo = Repo(repo_name, repo_url, archivo)
+            repo_name=form.cleaned_data['nombre_repo']
+            repo_url=form.cleaned_data['url_repo']
+            repo = Repo(nombre_repo=repo_name, url_repo=repo_url)
             repo.save()
             return render(request, 'RepoForm.html', {'form': RepoForm()})
         return render(request, 'RepoForm.html', {'form': form, "error": "Completar los datos requeridos"})
