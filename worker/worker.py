@@ -8,6 +8,6 @@ def download_repo(repo_url):
             os.makedirs(repo_name)
         subprocess.run(["git", "clone", repo_url, repo_name])
     except Exception:
-        print('Error downloading the repositorie')
+        print('Error downloading the repository')
 
 url = 'https://github.com/CloudComputingMasterProyecto/CC.git'
