@@ -1,6 +1,4 @@
-import git
 import subprocess
-import requests
 import os
 
 def download_repo(repo_url):
@@ -12,14 +10,4 @@ def download_repo(repo_url):
     except Exception:
         print('Error downloading the repositorie')
 
-def execute_repo(repo_url):
-    try:
-        repo_name = repo_url.split("/")[-1]
-        subprocess.run(["python", f"{repo_name}/main.py"])
-    except Exception:
-        print('Error downloading the repositorie')
-
-def download_and_execute_repo(request):
-    repo_url = request.POST["repo_url"]
-    download_repo(repo_url)
-    execute_repo(repo_url)
+url = 'https://github.com/CloudComputingMasterProyecto/CC.git'

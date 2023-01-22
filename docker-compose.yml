@@ -1,36 +1,129 @@
 version: "3.9"
+
 services:
-  db:
+# Databases
+  cc_frontend_db:
     build: ./db/
-    image: cc_postgres
-    hostname: cc_postgres
-    container_name: cc_postgres
+    image: cc_frontend_db
+    hostname: cc_frontend_db_host
+    container_name: cc_frontend_db
     restart: always
+    env_file:
+     - .env
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - TZ=Europe/Madrid
+      - POSTGRES_DB:${POSTGRES_DB}
+      - POSTGRES_USER:${POSTGRES_USER}
+      - POSTGRES_PASSWORD:${POSTGRES_PASSWORD}
+    labels:
+      - cc_frontend_db
+    ports:
+      - 5432
     networks:
       - cc_backend
-    ports:
-      - 5432:5432
     command: postgres
+  # cc_keycloak_db:
+  #   build: ./keycloak_db/
+  #   image: cc_keycloak_db
+  #   hostname: cc_keycloak_db_host
+  #   container_name: cc_keycloak_db
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - TZ=Europe/Madrid
+  #     - POSTGRES_DB:${POSTGRES_DB}
+  #     - POSTGRES_USER:${POSTGRES_USER}
+  #     - POSTGRES_PASSWORD:${POSTGRES_PASSWORD}
+  #   labels:
+  #     - cc_keycloak_db
+  #   ports:
+  #     - 5432
+  #   networks:
+  #     - cc_backend
+  #   command: postgres
+  # pgadmin:
+  #   container_name: cc_pgadmin4
+  #   image: dpage/pgadmin4:6
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: cc_admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: p455w0rd
+  #     PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 50
+  #     PGADMIN_CONFIG_FILE_LOG_LEVEL: 50
+  #     PGADMIN_CONFIG_SERVER_MODE: 'False'
+  #   depends_on:
+  #     - cc_frontend_db
+  #     - cc_keycloak_db
+  #   labels:
+  #     - cc_pgadmin
+  #   ports:
+  #     - "5050:80"
+  #   networks:
+  #     - cc_backend
+# Services
   frontend:
     build: ./frontend/
     container_name: cc_frontend
-    environment:
-     - DJANGO_SETTINGS_MODULE=cc_proyecto.settings
-    restart: always
     image: cc_frontend
+    environment:
+     - DJANGO_SETTINGS_MODULE:cc_proyecto.settings
+    restart: always
     depends_on:
-      db:
+      cc_frontend_db:
         condition: service_started
+    labels:
+      - cc_frontend
     ports:
       - 8000:8000
     networks:
       - cc_frontend
       - cc_backend
     command: bash -c "python manage.py makemigrations cc_proyecto && python manage.py migrate --no-input --run-syncdb && python manage.py runserver 0.0.0.0:8000"
+  # keycloak:
+  #   build: ./keycloak/
+  #   image: cc_keycloak
+  #   container_name: cc_keycloak
+  #   restart: always
+  #   environment:
+  #     - KEYCLOAK_ADMIN=admin
+  #     - KEYCLOAK_ADMIN_PASSWORD=admin
+  #   depends_on:
+  #     cc_keycloak_db:
+  #       condition: service_started
+  #   labels:
+  #     - cc_keycloak
+  #   ports: 
+  #     - 8080:8080
+  #   networks:
+  #     - cc_backend
+  #     - cc_frontend
+  #   command: start-dev
+  # zookeeper:
+  #   #build: ./zookeeper/
+  #   container_name: cc_zookeeper
+  #   image: 'bitnami/zookeeper:latest'
+  #   restart: always
+  #   labels:
+  #     - cc_zookeeper
+  #   ports:
+  #     - 2181
+  #   networks:
+  #       - cc_backend
+  # kafka:
+  #   #build: ./kafka/
+  #   image: 'bitnami/kafka:latest'
+  #   container_name: cc_kafka
+  #   restart: always
+  #   depends_on:
+  #     zookeeper:
+  #       condition: service_started
+  #   labels:
+  #     - cc_kafka
+  #   ports:
+  #     - 9092
+  #   networks:
+  #     - cc_backend
 networks:
   cc_backend:
     name: cc_backend

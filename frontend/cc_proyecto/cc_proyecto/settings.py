@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'cc_proyecto'
+    'cc_proyecto',
+    
 ]
 
 MIDDLEWARE = [
@@ -50,17 +51,43 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django-keycloak-auth.middleware.KeycloakMiddleware',
 ]
-#'django-keycloak-auth.middleware.KeycloakMiddleware',
+#
 # Exempt URIS
-# For example: ['core/banks', 'swagger']
-""" KEYCLOAK_EXEMPT_URIS = []
+
+# # For example: ['core/banks', 'swagger']
+KEYCLOAK_EXEMPT_URIS = []
 KEYCLOAK_CONFIG = {
-    'KEYCLOAK_SERVER_URL': 'http://localhost:8080/auth',
-    'KEYCLOAK_REALM': 'TEST',
-    'KEYCLOAK_CLIENT_ID': 'cc_app',
-    'KEYCLOAK_CLIENT_SECRET_KEY': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
-} """
+    'KEYCLOAK_SERVER_URL': 'localhost:8080/admin/master/console/',
+    'KEYCLOAK_REALM': 'cc_realm',
+    'KEYCLOAK_CLIENT_ID': 'cc_proyecto_cliente',
+    'KEYCLOAK_CLIENT_SECRET_KEY': 'pEdyRFUneCZjYqoBH2tQV4F81jlhesnv'
+}
+
+
+# import keycloak
+# from keycloak import KeycloakOpenID
+
+# KEYCLOAK_SERVER = "localhost:8080/admin/master/console/"
+# KEYCLOAK_REALM = "cc_realm"
+# KEYCLOAK_CLIENT_ID = "cc_proyecto_cliente"
+# KEYCLOAK_CLIENT_SECRET = "pEdyRFUneCZjYqoBH2tQV4F81jlhesnv"
+# KEYCLOAK_REDIRECT_URL = "localhost:8000/download_repo/"
+
+# # initialize the keycloak client
+# keycloak_client = KeycloakOpenID(server_url=KEYCLOAK_SERVER,
+#                                  realm_name=KEYCLOAK_REALM,
+#                                  client_id=KEYCLOAK_CLIENT_ID,
+#                                  client_secret=KEYCLOAK_CLIENT_SECRET
+#                                 )
+
+# # add the keycloak authentication backend
+# AUTHENTICATION_BACKENDS = ["keycloak.backends.KeycloakBackend"]
+
+# # configure the keycloak client for the application
+# KEYCLOAK_OIDC_CLIENT = keycloak_client
+# KEYCLOAK_OIDC_URL = KEYCLOAK_SERVER
 
 ROOT_URLCONF = 'cc_proyecto.urls'
 
@@ -89,14 +116,14 @@ WSGI_APPLICATION = 'cc_proyecto.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "cc_cloud",
-        'USER': "cc_cloud",
-        'PASSWORD': "cc_cloud",
-        'HOST': '172.18.0.2',
+        'NAME': "cc_cloud_db",
+        'USER': "cc_cloud_user",
+        'PASSWORD': "cc_cl0ud_p455",
+        'HOST': 'cc_frontend_db',
         'PORT': '5432',
     }
 }
-
+#172.18.0.2
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
