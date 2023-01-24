@@ -10,9 +10,8 @@ ENV PYTHONUNBUFFERED 1
 
 RUN mkdir -p /CC/CC/frontend/
 
+COPY ../cc /CC/CC/
+
 COPY . /CC/CC/frontend/
-WORKDIR /CC/CC/frontend/
-RUN pip install -r ./cc_proyecto/requirements.txt --no-cache-dir --root-user-action=ignore
-RUN bash -c "source cc/bin/activate"
+
 EXPOSE 8000:8000
-WORKDIR /CC/CC/frontend/cc_proyecto/
