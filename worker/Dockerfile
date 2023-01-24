@@ -1,9 +1,10 @@
 FROM python:3
-# Python no verifica actualizaciones de PIP
-ENV PIP_DISABLE_PIP_VERSION_CHECK 1
 
-# Python no (sobre)escribe archivos pyc
-ENV PYTHONDONTWRITEBYTECODE 1
+RUN mkdir -p /cc/worker/
 
-# Docker no maneja la salida de Python
-ENV PYTHONUNBUFFERED 1
+COPY . /cc/worker/
+RUN pip install -r ./cc/requirements.txt --no-cache-dir --root-user-action=ignore
+WORKDIR /cc/worker/
+RUN bash -c "source volume/cc_worker/bin/activate"
+EXPOSE 9000:9000
+WORKDIR /cc/worker/
