@@ -19,12 +19,12 @@ def download_repo(request):
             # Salvar repositorio a BD
             repo.save()
             # Envío de mensaje a Kafka
-            enviar_mensaje_kafka(repo_name, repo_url)
+            enviar_mensaje_kafka(repo_name, repo_url, "pendientes")
             return render(request, 'RepoForm.html', {'form': RepoForm()})
         return render(request, 'RepoForm.html', {'form': form, "error": "Complete los datos requeridos"})
     return render(request, 'RepoForm.html', {'form': form})
 
-def enviar_mensaje_kafka(repo_name, repo_url):
+def enviar_mensaje_kafka(repo_name, repo_url, topic):
     mensaje = {repo_name:repo_url}
     productor = KafkaProducer(bootstrap_servers="cc_kafka:9092")
-    productor.send("pendientes", mensaje)
+    productor.send(topic, mensaje)
