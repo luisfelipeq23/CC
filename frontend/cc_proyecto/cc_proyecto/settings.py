@@ -122,8 +122,7 @@ DATABASES = {
         'HOST': 'cc_frontend_db',
         'PORT': '5432',
     }
-}
-#172.18.0.2
+}#172.18.0.2
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

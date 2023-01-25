@@ -10,8 +10,6 @@ ENV PYTHONUNBUFFERED 1
 
 RUN mkdir -p /CC/CC/frontend/
 
-COPY ../cc /CC/CC/
-
 COPY . /CC/CC/frontend/
 
-EXPOSE 8000:8000
+EXPOSE 7800:7800

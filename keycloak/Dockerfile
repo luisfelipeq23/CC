@@ -10,7 +10,7 @@ ENV KC_LOG_LEVEL=INFO,org.keycloak.transaction:warn,org.keycloak.services.schedu
 ENV KC_DB=postgres
 ENV KC_DB_URL=jdbc:postgres://cc_keycloak_db_host:5432/cc_keycloak_user
 ENV KC_DB_USERNAME=cc_keycloak_user
-ENV KC_DB_PASSWORD=cc_keycl04k_p455
+ENV KC_DB_PASSWORD=cc_k3ycl04k_p455
 ENV KC_DB_POOL_INITIAL_SIZE=1
 ENV KC_DB_POOL_MIN_SIZE=1
 ENV KC_DB_POOL_MAX_SIZE=5
@@ -25,7 +25,5 @@ COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
 EXPOSE 8443
 RUN export KEYCLOAK_ADMIN=admin
-RUN export KEYCLOAK_ADMIN_PASSWORD=admin
-#RUN /opt/keycloak/bin/kcadm.sh create realms -s realm=main -s id="1001" -s enabled=true -s
-#RUN /bin/add-user.sh -r main -u $(KEYCLOAK_ADMIN) -p $(KEYCLOAK_ADMIN_PASSWORD)
+RUN export KEYCLOAK_ADMIN_PASSWORD=4dm1n
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]

@@ -4,7 +4,6 @@ services:
 # Databases
   cc_frontend_db:
     build: ./frontend_db/
-    image: cc_frontend_db
     hostname: cc_frontend_db_host
     container_name: cc_frontend_db
     restart: always
@@ -24,7 +23,6 @@ services:
     command: postgres
   cc_keycloak_db:
     build: ./keycloak_db/
-    image: cc_keycloak_db
     hostname: cc_keycloak_db_host
     container_name: cc_keycloak_db
     restart: always
@@ -67,7 +65,6 @@ services:
     build: ./frontend/
     hostname: cc_frontend_host
     container_name: cc_frontend
-    image: cc_frontend
     environment:
      - DJANGO_SETTINGS_MODULE:cc_proyecto.settings
     restart: always
@@ -81,21 +78,19 @@ services:
     networks:
       - cc_frontend
       - cc_backend
-    command: bash -c "source ./cc/bin/activate && 
-                      pip install -r ./requirements.txt --no-cache-dir --root-user-action=ignore &&
+    command: bash -c "source /CC/CC/frontend/cc/bin/activate && 
+                      pip install -r /CC/CC/frontend/requirements.txt --no-cache-dir --root-user-action=ignore &&
                       python /CC/CC/frontend/cc_proyecto/manage.py makemigrations cc_proyecto && 
                       python /CC/CC/frontend/cc_proyecto/manage.py migrate --no-input --run-syncdb && 
-                      python /CC/CC/frontend/cc_proyecto/manage.py runserver 0.0.0.0:8000"
-                      #
+                      python /CC/CC/frontend/cc_proyecto/manage.py runserver 0.0.0.0:7800"
   keycloak:
     build: ./keycloak/
     hostname: cc_keycloak_host
-    image: cc_keycloak
     container_name: cc_keycloak
     restart: always
     environment:
       - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KEYCLOAK_ADMIN_PASSWORD=4dm1n
     depends_on:
       cc_keycloak_db:
         condition: service_started
@@ -107,37 +102,9 @@ services:
       - cc_backend
       - cc_frontend
     command: start-dev
-  zookeeper:
-    build: ./zookeeper/
-    hostname: cc_zookeeper_host
-    container_name: cc_zookeeper
-    image: 'cc_zookeeper'
-    restart: always
-    labels:
-      - cc_zookeeper
-    ports:
-      - 2181
-    networks:
-        - cc_backend
-  kafka:
-    build: ./kafka/
-    hostname: cc_kafka_host
-    image: 'cc_kafka'
-    container_name: cc_kafka
-    restart: always
-    depends_on:
-      zookeeper:
-        condition: service_started
-    labels:
-      - cc_kafka
-    ports:
-      - 9092
-    networks:
-      - cc_backend
   minio:
     build: ./minio/
     hostname: cc_minio_host
-    image: cc_minio
     container_name: cc_minio
     restart: always
     labels:
@@ -151,7 +118,6 @@ services:
   worker:
     build: ./worker/
     hostname: cc_worker_host
-    image: 'cc_worker'
     container_name: cc_worker
     restart: always
     environment:
@@ -169,6 +135,37 @@ services:
       - cc_backend
     volumes:
       - cc_worker_volume:/cc/worker/volume/
+    command: bash -c "cd /CC/CC && source /CC/CC/worker/cc_worker/bin/activate && 
+                      pip install -r /CC/CC/worker/requirements.txt --no-cache-dir --root-user-action=ignore &&
+                      cd /CC/CC/worker/volume/ && uvicorn worker_api:app --reload --port=3000"
+  zookeeper:
+    build: ./zookeeper/
+    hostname: cc_zookeeper_host
+    container_name: cc_zookeeper
+    restart: always
+    labels:
+      - cc_zookeeper
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zookeeper:2888:3888;2181
+    networks:
+        - cc_backend
+  kafka:
+    build: ./kafka/
+    hostname: cc_kafka_host
+    image: 'cc_kafka'
+    container_name: cc_kafka
+    restart: always
+    depends_on:
+      zookeeper:
+        condition: service_started
+    labels:
+      - cc_kafka
+    ports:
+      - 9092
+    networks:
+      - cc_backend
+    #command: bash -c "JMX_PORT=8004 kafka-server-start.sh config/server.properties"
 networks:
   cc_backend:
     name: cc_backend

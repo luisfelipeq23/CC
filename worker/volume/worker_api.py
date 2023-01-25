@@ -26,7 +26,7 @@ async def init_worker(repo:RepoModel):
         worker_minio.subir_archivo()
         mensaje = 'status:200'
     except Exception as e:
-        mensaje = e
+        mensaje = 'status:400|' + e
     return {mensaje}
 
 def obtener_credenciales():

@@ -1,11 +1,11 @@
-FROM bitnami/zookeeper:latest
-COPY zoo.cfg /opt/bitnami/zookeeper/conf/zoo.cfg
-EXPOSE 2181 2888 3888
-ENTRYPOINT ["zkServer.sh start"]
-CMD ["/opt/bitnami/zookeeper/conf/zoo.cfg"]
+FROM zookeeper
+
+EXPOSE 2181
+EXPOSE 2888
+EXPOSE 3888
 
 
-# FROM zookeeper:latest
-# COPY zoo.cfg /conf/zoo.cfg
-# EXPOSE 2181
-# CMD ["zkServer.sh", "start-foreground"]
+ENV ZOO_SERVER_USERS=user1,user2
+ENV ZOO_SERVER_PASSWORDS=pass4user1,pass4user2
+ENV ZOO_CLIENT_USER=user1
+ENV ZOO_CLIENT_PASSWORD=pass4user1
