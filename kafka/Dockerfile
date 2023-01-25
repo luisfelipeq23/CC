@@ -1,7 +1,7 @@
 FROM bitnami/kafka
-#COPY server.properties /opt/bitnami/kafka/config/server.properties
+COPY server.properties /opt/bitnami/kafka/config/
 ENV KAFKA_BROKER_ID=1
 ENV KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
 ENV KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
-ENV KAFKA_CFG_ZOOKEEPER_CONNECT=cc_zoookeeper:2181
+ENV KAFKA_CFG_ZOOKEEPER_CONNECT=cc_zookeeper:2181
 ENV ALLOW_PLAINTEXT_LISTENER=yes

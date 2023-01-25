@@ -165,7 +165,6 @@ services:
       - 9092
     networks:
       - cc_backend
-    #command: bash -c "JMX_PORT=8004 kafka-server-start.sh config/server.properties"
 networks:
   cc_backend:
     name: cc_backend
