@@ -82,7 +82,7 @@ services:
                       pip install -r /CC/CC/frontend/requirements.txt --no-cache-dir --root-user-action=ignore &&
                       python /CC/CC/frontend/cc_proyecto/manage.py makemigrations cc_proyecto && 
                       python /CC/CC/frontend/cc_proyecto/manage.py migrate --no-input --run-syncdb && 
-                      python /CC/CC/frontend/cc_proyecto/manage.py runserver 0.0.0.0:7800"
+                      python /CC/CC/frontend/cc_proyecto/manage.py runserver 0.0.0.0:8000"
   keycloak:
     build: ./keycloak/
     hostname: cc_keycloak_host

@@ -62,7 +62,7 @@ KEYCLOAK_CONFIG = {
     'KEYCLOAK_SERVER_URL': 'localhost:8080/admin/master/console/',
     'KEYCLOAK_REALM': 'cc_realm',
     'KEYCLOAK_CLIENT_ID': 'cc_proyecto_cliente',
-    'KEYCLOAK_CLIENT_SECRET_KEY': 'pEdyRFUneCZjYqoBH2tQV4F81jlhesnv'
+    'KEYCLOAK_CLIENT_SECRET_KEY': 'KCHMyvEgTsktOQFdmT1win8xfGMK0jdO'
 }
 
 
