@@ -9,6 +9,8 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # Docker no maneja la salida de Python
 ENV PYTHONUNBUFFERED 1
 
-RUN mkdir -p /CC/CC/frontend/
+RUN mkdir -p /CC/CC/inyector/
+
+#COPY . /CC/CC/inyector/
 
 EXPOSE 8000:8000

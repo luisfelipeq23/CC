@@ -24,7 +24,6 @@ class worker_minio:
         try:
             nombre_bucket = re.sub(r'\W+', '-', nombre_bucket)
             nombre_bucket = nombre_bucket.lower()
-            nombre_bucket = nombre_bucket.replace("","")
             return nombre_bucket
         except Exception as e:
             print(e)

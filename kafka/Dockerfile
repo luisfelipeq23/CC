@@ -1,7 +1,14 @@
 FROM bitnami/kafka
-COPY server.properties /opt/bitnami/kafka/config/
-ENV KAFKA_BROKER_ID=1
-ENV KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-ENV KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
-ENV KAFKA_CFG_ZOOKEEPER_CONNECT=cc_zookeeper:2181
+COPY ./properties/server.properties /opt/bitnami/kafka/config/
+COPY ./properties/producer.properties /opt/bitnami/kafka/config/
+COPY ./properties/consumer.properties /opt/bitnami/kafka/config/
+
+# Set environment variables
+ENV KAFKA_HOME /opt/bitnami/kafka
+ENV PATH $PATH:$KAFKA_HOME/bin
 ENV ALLOW_PLAINTEXT_LISTENER=yes
+
+WORKDIR $KAFKA_HOME/bin
+
+ENTRYPOINT ["kafka-server-start.sh", "/opt/bitnami/kafka/config/server.properties"]
+# "kafka-topics.sh --create --topic pendientes --zookeeper cc_zookeeper:2181 --replication-factor 1 --partitions 1

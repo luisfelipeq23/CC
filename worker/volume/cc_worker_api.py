@@ -30,7 +30,10 @@ async def init_worker(repo:RepoModel):
     return {mensaje}
 
 def obtener_credenciales():
-    file = open(ARCH_CREDENCIALES, 'r')
-    data = json.loads(file.read())
-    file.close()
-    return [data['url'], data['accessKey'], data['secretKey']]
+    try:
+        file = open(ARCH_CREDENCIALES, 'r')
+        data = json.loads(file.read())
+        file.close()
+        return [data['url'], data['accessKey'], data['secretKey']]
+    except Exception as e:
+        return e

@@ -14,5 +14,8 @@ class worker_github:
         self.__ruta_descarga = ruta_descarga
     
     def descargar_repo(self):
-        if not (os.path.isdir(self.__ruta_descarga + self.__repo_nombre)):
-            git.Repo.clone_from(self.__repo_url, self.__ruta_descarga + self.__repo_nombre)
+        try:
+            if not (os.path.isdir(self.__ruta_descarga + self.__repo_nombre)):
+                git.Repo.clone_from(self.__repo_url, self.__ruta_descarga + self.__repo_nombre)
+        except Exception as e:
+            return e

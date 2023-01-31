@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'cc_proyecto',
+    "corsheaders",
     
 ]
 
@@ -51,43 +52,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django-keycloak-auth.middleware.KeycloakMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
-#
-# Exempt URIS
-
-# # For example: ['core/banks', 'swagger']
-KEYCLOAK_EXEMPT_URIS = []
-KEYCLOAK_CONFIG = {
-    'KEYCLOAK_SERVER_URL': 'localhost:8080/admin/master/console/',
-    'KEYCLOAK_REALM': 'cc_realm',
-    'KEYCLOAK_CLIENT_ID': 'cc_proyecto_cliente',
-    'KEYCLOAK_CLIENT_SECRET_KEY': 'KCHMyvEgTsktOQFdmT1win8xfGMK0jdO'
-}
-
-
-# import keycloak
-# from keycloak import KeycloakOpenID
-
-# KEYCLOAK_SERVER = "localhost:8080/admin/master/console/"
-# KEYCLOAK_REALM = "cc_realm"
-# KEYCLOAK_CLIENT_ID = "cc_proyecto_cliente"
-# KEYCLOAK_CLIENT_SECRET = "pEdyRFUneCZjYqoBH2tQV4F81jlhesnv"
-# KEYCLOAK_REDIRECT_URL = "localhost:8000/download_repo/"
-
-# # initialize the keycloak client
-# keycloak_client = KeycloakOpenID(server_url=KEYCLOAK_SERVER,
-#                                  realm_name=KEYCLOAK_REALM,
-#                                  client_id=KEYCLOAK_CLIENT_ID,
-#                                  client_secret=KEYCLOAK_CLIENT_SECRET
-#                                 )
-
-# # add the keycloak authentication backend
-# AUTHENTICATION_BACKENDS = ["keycloak.backends.KeycloakBackend"]
-
-# # configure the keycloak client for the application
-# KEYCLOAK_OIDC_CLIENT = keycloak_client
-# KEYCLOAK_OIDC_URL = KEYCLOAK_SERVER
 
 ROOT_URLCONF = 'cc_proyecto.urls'
 
@@ -161,3 +127,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+CORS_ORIGIN_ALLOW_ALL = True
