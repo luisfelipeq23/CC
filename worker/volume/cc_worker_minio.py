@@ -42,6 +42,5 @@ class worker_minio:
             for raiz, dirs, archivos in os.walk(self.__ruta_local_fichero):
                 for archivo in archivos:
                     cliente.fput_object(self.__nombre_bucket, os.path.join(raiz, archivo).replace(self.__ruta_local_fichero, ""), os.path.join(raiz, archivo))
-            
         except Exception as e:
             print(e)

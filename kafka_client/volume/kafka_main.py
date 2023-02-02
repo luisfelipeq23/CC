@@ -8,7 +8,7 @@ def main():
         while(correr):
             consumidor.subscribe("pendientes")
             resultado = consumidor.poll(timeout_ms=5.0)
-            print(resultado)
+            print(resultado.decode("UTF-8"))
     except Exception as ex:
         print(ex)
 

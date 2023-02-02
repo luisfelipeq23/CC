@@ -13,15 +13,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from cc_app import views
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api/', views.RepoViewSet.as_view, name='repos'),
-    path('', views.download_repo, name='home'),
+    path('', views.login, name='login'),
+    path('home/', views.download_repo, name='home'),
     path('download_repo/', views.download_repo, name='download_repo'),
+    #path(r'^keycloak/', include('django_keycloak.urls')),
+]
+
     # path('repos', views.RepoViewSet.as_view({
     #     'get':'list',
     #     'repo':'create',
@@ -31,4 +36,3 @@ urlpatterns = [
     #     'put':'update',
     #     'delete':'destroy'
     # })),
-]

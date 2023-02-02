@@ -1,29 +1,26 @@
-FROM quay.io/keycloak/keycloak:latest as builder
+FROM bitnami/keycloak
 
 # Variables de ambiente
-ENV KC_HEALTH_ENABLED=true
-ENV KC_METRICS_ENABLED=true
-ENV KEYCLOAK_ADMIN=admin
-ENV KEYCLOAK_ADMIN_PASSWORD=admin
-ENV KC_LOG=console,file
-ENV KC_LOG_LEVEL=INFO,org.keycloak.transaction:warn,org.keycloak.services.scheduled:warn,org.hibernate:info,org.infinispan.protostream:info
-ENV KC_DB=postgres
-ENV KC_DB_URL=jdbc:postgres://cc_keycloak_db_host:5432/cc_keycloak_user
-ENV KC_DB_USERNAME=cc_keycloak_user
-ENV KC_DB_PASSWORD=cc_k3ycl04k_p455
-ENV KC_DB_POOL_INITIAL_SIZE=1
-ENV KC_DB_POOL_MIN_SIZE=1
-ENV KC_DB_POOL_MAX_SIZE=5
+# ENV KEYCLOAK_CREATE_ADMIN_USER:=true
+# ENV KEYCLOAK_ADMIN_USER=admin
+# ENV KEYCLOAK_ADMIN_PASSWORD=4dm1n
+# ENV KEYCLOAK_MANAGEMENT_USER=manager
+# ENV KEYCLOAK_MANAGEMENT_PASSWORD=bitnami1
 
-WORKDIR /opt/keycloak
+# ENV KEYCLOAK_DATABASE_HOST=cc_keycloak_db_host
+# ENV KEYCLOAK_DATABASE_PORT=5432
+# ENV KEYCLOAK_DATABASE_NAME=bitnami_keycloak
+# ENV KEYCLOAK_DATABASE_USER=bn_keycloak
+# ENV KEYCLOAK_DATABASE_PASSWORD=bn_keycloak
+# ENV KEYCLOAK_DATABASE_SCHEMA=public.
+# ENV KEYCLOAK_JDBC_PARAMS=sslmode=verify-full&connectTimeout=30000
 
-RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=server" -alias server -ext "SAN:c=DNS:localhost,IP:127.0.0.1" -keystore conf/server.keystore
-RUN /opt/keycloak/bin/kc.sh build
+# ENV KEYCLOAK_HTTP_PORT=8080.
+# ENV KEYCLOAK_HTTPS_PORT=8443.
+# ENV KEYCLOAK_BIND_ADDRESS=0.0.0.0
 
-FROM quay.io/keycloak/keycloak:latest
-COPY --from=builder /opt/keycloak/ /opt/keycloak/
-
-EXPOSE 8443
 RUN export KEYCLOAK_ADMIN=admin
 RUN export KEYCLOAK_ADMIN_PASSWORD=4dm1n
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+ENV PATH=$PATH:/opt/bitnami/keycloak/bin
+ENTRYPOINT ["kc.sh"]
+#ENV PATH=$PATH:/opt/keycloak/bin/

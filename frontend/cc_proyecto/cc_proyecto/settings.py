@@ -26,11 +26,10 @@ SECRET_KEY = 'srq@glu@+b)2yo5cj69q)w&94vt$27#(!rno*nudq(f+@gob+6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', 'cc_postgres', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -75,7 +74,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cc_proyecto.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -85,10 +83,10 @@ DATABASES = {
         'NAME': "cc_cloud_db",
         'USER': "cc_cloud_user",
         'PASSWORD': "cc_cl0ud_p455",
-        'HOST': 'cc_frontend_db',
+        'HOST': 'cc_frontend_db',#'192.168.32.2',
         'PORT': '5432',
     }
-}#172.18.0.2
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -128,3 +126,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 CORS_ORIGIN_ALLOW_ALL = True
+

@@ -1,5 +1,18 @@
 import kafka as k
 
+def main():
+    correr = True
+    try:
+        consumidor = k.KafkaConsumer("pendientes", bootstrap_servers="cc_kafka:9092")
+        while(correr):
+            consumidor.subscribe("pendientes")
+            resultado = consumidor.poll(timeout_ms=5.0)
+            print(resultado.decode("UTF-8"))
+    except Exception as ex:
+        print(ex)
+
+main()
+
 # class ConsumirKafka:
 
 #     __bootstrap_servers = ""

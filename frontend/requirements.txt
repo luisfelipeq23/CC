@@ -2,6 +2,7 @@ virtualenv==20.13.0
 django==3.2
 djangorestframework==3.12.2
 django-keycloak-auth==0.9.5
+django-cors-headers==3.13.0
 fastapi==0.89.1
 pydantic==1.10.4
 gitpython==3.1.30
@@ -11,4 +12,4 @@ minio==7.1.12
 docker==6.0.1
 uvicorn==0.20.0
 kafka-python==2.0.2
-django-cors-headers==3.13.0
+keycloak-client==0.15.4 

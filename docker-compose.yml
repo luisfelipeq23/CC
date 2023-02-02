@@ -2,7 +2,7 @@ version: "3.11"
 
 services:
 # Databases
-  frontend_db:
+  cc_frontend_db:
     build: ./frontend_db/
     hostname: cc_frontend_db_host
     container_name: cc_frontend_db
@@ -21,13 +21,13 @@ services:
     networks:
       - cc_backend
     command: postgres
-  keycloak_db:
+  cc_keycloak_db:
     build: ./keycloak_db/
     hostname: cc_keycloak_db_host
     container_name: cc_keycloak_db
     restart: always
     env_file:
-      - .env
+      .env
     environment:
       - TZ=Europe/Madrid
       - POSTGRES_DB:${POSTGRES_DB}
@@ -41,7 +41,66 @@ services:
       - cc_backend
     command: postgres
 # Services
-  frontend:
+  cc_keycloak:
+    build: ./keycloak/
+    hostname: cc_keycloak_host
+    container_name: cc_keycloak
+    restart: always
+    environment:
+      - KEYCLOAK_CREATE_ADMIN_USER:=true
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=4dm1n
+      - KEYCLOAK_MANAGEMENT_USER=manager
+      - KEYCLOAK_MANAGEMENT_PASSWORD=bitnami1
+
+      - KEYCLOAK_DATABASE_HOST=cc_keycloak_db_host
+      - KEYCLOAK_DATABASE_PORT=5432
+      - KEYCLOAK_DATABASE_NAME=bitnami_keycloak
+      - KEYCLOAK_DATABASE_USER=bn_keycloak
+      - KEYCLOAK_DATABASE_PASSWORD=bn_keycloak
+      - KEYCLOAK_DATABASE_SCHEMA=public.
+      - KEYCLOAK_JDBC_PARAMS=sslmode=verify-full&connectTimeout=30000
+
+      - KEYCLOAK_HTTP_PORT=8080.
+      - KEYCLOAK_HTTPS_PORT=8443.
+      - KEYCLOAK_BIND_ADDRESS=0.0.0.0
+    depends_on:
+      cc_keycloak_db:
+        condition: service_started
+    labels:
+      - cc_keycloak
+    ports: 
+      - 8080:8080
+      - 8443:8443
+    networks:
+      - cc_backend
+      - cc_frontend
+    command: start-dev
+  cc_keycloak_rest_api:
+    build: ./keycloak_rest_api/
+    hostname: cc_keycloak_rest_api_host
+    container_name: cc_keycloak_rest_api
+    restart: always
+    environment:
+      - PIP_DISABLE_PIP_VERSION_CHECK=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      cc_keycloak:
+        condition: service_started
+    labels:
+      - cc_keycloak_rest_api
+    ports:
+      - 8081:8081
+    networks:
+      - cc_backend
+    volumes:
+      - type: bind
+        source: ./keycloak_rest_api
+        target: /CC/CC/keycloak_rest_api
+    command: bash -c "pip3 install -r /CC/CC/keycloak_rest_api/requirements.txt --no-cache-dir --root-user-action=ignore &&
+                      cd /CC/CC/keycloak_rest_api/volume/ && python3 entrypoint.py"
+  cc_frontend:
     build: ./frontend/
     hostname: cc_frontend_host
     container_name: cc_frontend
@@ -49,7 +108,9 @@ services:
      - DJANGO_SETTINGS_MODULE:cc_proyecto.settings
     restart: always
     depends_on:
-      frontend_db:
+      cc_frontend_db:
+        condition: service_started
+      cc_keycloak_rest_api:
         condition: service_started
     labels:
       - cc_frontend
@@ -67,39 +128,22 @@ services:
                       python3 /CC/CC/frontend/cc_proyecto/manage.py makemigrations cc_proyecto && 
                       python3 /CC/CC/frontend/cc_proyecto/manage.py migrate --no-input --run-syncdb && 
                       python3 /CC/CC/frontend/cc_proyecto/manage.py runserver 0.0.0.0:8000"
-  keycloak:
-    build: ./keycloak/
-    hostname: cc_keycloak_host
-    container_name: cc_keycloak
-    restart: always
-    environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=4dm1n
-    depends_on:
-      keycloak_db:
-        condition: service_started
-    labels:
-      - cc_keycloak
-    ports: 
-      - 8080:8080
-    networks:
-      - cc_backend
-      - cc_frontend
-    command: start-dev
-  minio:
+  cc_minio:
     build: ./minio/
     hostname: cc_minio_host
     container_name: cc_minio
     restart: always
     labels:
       - cc_minio
-    # volumes:
-    #   - cc_minio_volume:/cc/minio/volume/
     ports:
       - 9000:9000
+      - 9001:9001
     networks:
       - cc_backend
-  worker:
+    command: server --address ":9000" --console-address ":9001" /data
+    volumes:
+      - cc_minio_volume:/data
+  cc_worker:
     build: ./worker/
     hostname: cc_worker_host
     container_name: cc_worker
@@ -109,7 +153,7 @@ services:
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
     depends_on:
-      minio:
+      cc_minio:
         condition: service_started
     labels:
       - cc_worker
@@ -124,7 +168,7 @@ services:
     command: bash -c "cd /CC/CC && source /CC/CC/worker/cc_venv_worker/bin/activate && 
                       pip3 install -r /CC/CC/worker/requirements.txt --no-cache-dir --root-user-action=ignore &&
                       cd /CC/CC/worker/volume/ && uvicorn worker_api:app --reload --port=3000"
-  inyector:
+  cc_inyector:
     build: ./inyector/
     hostname: cc_inyector_host
     container_name: cc_inyector
@@ -134,7 +178,7 @@ services:
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
     depends_on:
-      kafka:
+      cc_kafka:
         condition: service_started
     labels:
       - cc_inyector
@@ -149,7 +193,7 @@ services:
     command: bash -c "cd /CC/CC && source /CC/CC/inyector/cc_venv_inyector/bin/activate && 
                       pip3 install -r /CC/CC/inyector/requirements.txt --no-cache-dir --root-user-action=ignore &&
                       cd /CC/CC/inyector/volume/ && uvicorn cc_inyector_api:app --reload --port=3000"
-  zookeeper:
+  cc_zookeeper:
     build: ./zookeeper/
     hostname: cc_zookeeper_host
     container_name: cc_zookeeper
@@ -163,7 +207,7 @@ services:
       ZOO_SERVERS: server.1=zookeeper:2888:3888;2181
     networks:
         - cc_backend
-  kafka:
+  cc_kafka:
     build: ./kafka/
     hostname: cc_kafka_host
     image: 'cc_kafka'
@@ -173,7 +217,7 @@ services:
       KAFKA_USERNAME: cc_kafka_admin
       KAFKA_PASSWORD: cc_4dm1n_p455
     depends_on:
-      zookeeper:
+      cc_zookeeper:
         condition: service_started
     labels:
       - cc_kafka
@@ -181,14 +225,28 @@ services:
       - 9092:9092
     networks:
       - cc_backend
-  kafka_client:
+  cc_kafka_ui:
+    image: provectuslabs/kafka-ui
+    container_name: cc_kafkaui
+    ports:
+      - 9093:9093
+    restart: always
+    depends_on:
+      cc_kafka:
+        condition: service_started
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=cc_kafka:9092
+    networks:
+      - cc_backend
+  cc_kafka_client:
     build: ./kafka_client/
     hostname: cc_kafka_client_host
     image: 'cc_kafka_client'
     container_name: cc_kafka_client
     restart: always
     depends_on:
-      kafka:
+      cc_kafka:
         condition: service_started
     labels:
       - cc_kafka_client
