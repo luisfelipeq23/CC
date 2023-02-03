@@ -76,30 +76,30 @@ services:
       - cc_backend
       - cc_frontend
     command: start-dev
-  cc_keycloak_rest_api:
-    build: ./keycloak_rest_api/
-    hostname: cc_keycloak_rest_api_host
-    container_name: cc_keycloak_rest_api
-    restart: always
-    environment:
-      - PIP_DISABLE_PIP_VERSION_CHECK=1
-      - PYTHONDONTWRITEBYTECODE=1
-      - PYTHONUNBUFFERED=1
-    depends_on:
-      cc_keycloak:
-        condition: service_started
-    labels:
-      - cc_keycloak_rest_api
-    ports:
-      - 8081:8081
-    networks:
-      - cc_backend
-    volumes:
-      - type: bind
-        source: ./keycloak_rest_api
-        target: /CC/CC/keycloak_rest_api
-    command: bash -c "pip3 install -r /CC/CC/keycloak_rest_api/requirements.txt --no-cache-dir --root-user-action=ignore &&
-                      cd /CC/CC/keycloak_rest_api/volume/ && python3 entrypoint.py"
+  # cc_keycloak_rest_api:
+  #   build: ./keycloak_rest_api/
+  #   hostname: cc_keycloak_rest_api_host
+  #   container_name: cc_keycloak_rest_api
+  #   restart: always
+  #   environment:
+  #     - PIP_DISABLE_PIP_VERSION_CHECK=1
+  #     - PYTHONDONTWRITEBYTECODE=1
+  #     - PYTHONUNBUFFERED=1
+  #   depends_on:
+  #     cc_keycloak:
+  #       condition: service_started
+  #   labels:
+  #     - cc_keycloak_rest_api
+  #   ports:
+  #     - 8081:8081
+  #   networks:
+  #     - cc_backend
+  #   volumes:
+  #     - type: bind
+  #       source: ./keycloak_rest_api
+  #       target: /CC/CC/keycloak_rest_api
+  #   command: bash -c "pip3 install -r /CC/CC/keycloak_rest_api/requirements.txt --no-cache-dir --root-user-action=ignore &&
+  #                     cd /CC/CC/keycloak_rest_api/volume/ && python3 entrypoint.py"
   cc_frontend:
     build: ./frontend/
     hostname: cc_frontend_host
@@ -109,8 +109,6 @@ services:
     restart: always
     depends_on:
       cc_frontend_db:
-        condition: service_started
-      cc_keycloak_rest_api:
         condition: service_started
     labels:
       - cc_frontend
@@ -210,7 +208,6 @@ services:
   cc_kafka:
     build: ./kafka/
     hostname: cc_kafka_host
-    image: 'cc_kafka'
     container_name: cc_kafka
     restart: always
     environment:
@@ -225,40 +222,6 @@ services:
       - 9092:9092
     networks:
       - cc_backend
-  cc_kafka_ui:
-    image: provectuslabs/kafka-ui
-    container_name: cc_kafkaui
-    ports:
-      - 9093:9093
-    restart: always
-    depends_on:
-      cc_kafka:
-        condition: service_started
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=cc_kafka:9092
-    networks:
-      - cc_backend
-  cc_kafka_client:
-    build: ./kafka_client/
-    hostname: cc_kafka_client_host
-    image: 'cc_kafka_client'
-    container_name: cc_kafka_client
-    restart: always
-    depends_on:
-      cc_kafka:
-        condition: service_started
-    labels:
-      - cc_kafka_client
-    ports:
-      - 9050:9050
-    networks:
-      - cc_backend
-    volumes:
-      - type: bind
-        source: ./kafka_client
-        target: /CC/CC/kafka_client
-    command: bash -c "cd /CC/CC/kafka_client/volume/ && python3 kafka_main.py"
 networks:
   cc_backend:
     name: cc_backend
@@ -271,3 +234,62 @@ volumes:
     name: cc_minio_vol
   cc_worker_volume:
     name: cc_worker_vol
+
+  # cc_kafka_ui:
+  #   image: provectuslabs/kafka-ui
+  #   container_name: cc_kafkaui
+  #   ports:
+  #     - 8080:8080
+  #   restart: always
+  #   depends_on:
+  #     cc_kafka:
+  #       condition: service_started
+  #   environment:
+  #     - KAFKA_CLUSTERS_0_NAME=local
+  #     - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=cc_kafka:9092
+  #   networks:
+  #     - cc_backend
+  # cc_kafka_client:
+  #   build: ./kafka_client/
+  #   hostname: cc_kafka_client_host
+  #   container_name: cc_kafka_client
+  #   restart: always
+  #   depends_on:
+  #     cc_kafka:
+  #       condition: service_started
+  #   labels:
+  #     - cc_kafka_client
+  #   ports:
+  #     - 9050:9050
+  #   networks:
+  #     - cc_backend
+  #   volumes:
+  #     - type: bind
+  #       source: ./kafka_client
+  #       target: /CC/CC/kafka_client
+  #   command: bash -c "cd /CC/CC/kafka_client/volume/ && python3 kafka_main.py"
+  # cc_oauth2_proxy:
+  #   build: ./oauth2_proxy/
+  #   hostname: cc_oauth2_proxy_host
+  #   image: cc_oauth2_proxy #quay.io/oauth2-proxy/oauth2-proxy:latest
+  #   container_name: cc_oauth2_proxy
+  #   restart: always
+  #   labels:
+  #     - cc_oauth2_proxy
+  #   networks:
+  #     - cc_backend
+  #   ports:
+  #     - 4180:4180
+  #   command:
+  #     - --upstream=http://cc_frontend_host:8000 #
+  #     - --http-address=http://0.0.0.0:4180
+  #     - --redirect-url=http://172.31.0.7:8080/oauth2/callback #http://172.31.0.7:8080/realms/master/protocol/openid-connect/auth?approval_prompt=force&client_id=cc_cliente&nonce=IhaRlvt3407HkXNkD7BDk-hmojDzHGmebEVo0wyzKeU&redirect_uri=http%3A%2F%2F172.31.0.7%3A8080%2Foauth2%2Fcallback&response_type=code&scope=openid+email+profile&state=UEr8ls0pTZXlY9mxmI0AeR0kjEDmXvubawl3pQhhmEo%3A%2F
+  #   entrypoint:
+  #     - oauth2-proxy
+  #   environment:
+  #     - OAUTH2_PROXY_CLIENT_ID=cc_cliente
+  #     - OAUTH2_PROXY_CLIENT_SECRET= LLbUY4S3Z45smG7rvK4YDf0q0HBfRExa #UOgvXVa2RS0da1oJHyu0Q8535RFKXkbM
+  #     - OAUTH2_PROXY_COOKIE_SECRET=Gnb468gbcSjJ9ZxL
+  #     - OAUTH2_PROXY_EMAIL_DOMAINS=*
+  #     - OAUTH2_PROXY_PROVIDER=keycloak-oidc #
+  #     - OAUTH2_PROXY_OIDC_ISSUER_URL=http://172.31.0.7:8080/realms/master #172.31.0.7
