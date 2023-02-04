@@ -7,8 +7,8 @@ COPY ./properties/consumer.properties /opt/bitnami/kafka/config/
 ENV KAFKA_HOME /opt/bitnami/kafka
 ENV PATH $PATH:$KAFKA_HOME/bin
 ENV ALLOW_PLAINTEXT_LISTENER=yes
+ENV ALLOW_ANONYMUS_LOGIN=yes
 
 WORKDIR $KAFKA_HOME/bin
 
 ENTRYPOINT ["kafka-server-start.sh", "/opt/bitnami/kafka/config/server.properties"]
-# "kafka-topics.sh --create --topic pendientes --zookeeper cc_zookeeper:2181 --replication-factor 1 --partitions 1

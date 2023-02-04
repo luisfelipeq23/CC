@@ -1,28 +1,51 @@
-from kafka import KafkaConsumer
+import kafka as k
+import requests
+import tracemalloc
+from fastapi import FastAPI
 
-class inyector:
+tracemalloc.start()
 
-    __topic = ""
+url = "http://cc_worker:3000/procesar_tarea/"
 
-    def __init__(self, topic):
-        self.__topic = topic
+# app = FastAPI()
 
-    def obtener_mensaje_kafka(self):
-        try:
-            consumidor = KafkaConsumer(self.__topic, bootstrap_servers='cc_kafka:9092')
-            consumidor.subscribe(self.__topic)
-            mensajes = consumidor.poll()
-            for msg in mensajes:
-                return str(msg)
-        except Exception as e:
-            print(e)
+# @app.post("/enviar_peticion")
+# async 
+def enviar_peticion_worker(datos):
+    try:
+        payload = "{payload:" + str(datos) + "}"
+        resp = requests.post(url,json=payload)
+        if resp.status_code != 200:
+            print("Solicitud no enviada")
+        else:
+            print("Solicitud enviada con éxito")
+    except Exception as e:
+        print(e)
 
-    def obtener_topic(self):
-        return self.__topic
-    
-    def escribir_topic(self, topic):
-        self.__topic = topic
+def main():
+    try:
+        consumidor = k.KafkaConsumer("pendientes", bootstrap_servers="cc_kafka:9092")
+        consumidor.subscribe("pendientes")
+        for msj in consumidor:
+            if msj:
+                enviar_peticion_worker(msj)
+    except Exception as ex:
+        print(ex)
 
-# 192.168.0.6
-i = inyector('pendientes')
-i.obtener_mensaje_kafka()
+main()
+
+
+
+# response = requests.get(url)
+
+# if response.status_code == 200:
+#     data = response.json()
+#     print(data)
+# else:
+#     print("Request failed with status code:", response.status_code)
+
+# while(correr):
+#     resultado = consumidor.poll(timeout_ms=5.0)
+#     if(resultado != ""):
+#         print(resultado)
+#         time.sleep(1800)

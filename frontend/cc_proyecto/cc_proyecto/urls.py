@@ -21,10 +21,10 @@ from cc_app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.login, name='login'),
+    #path('', views.login, name='login'),
     path('home/', views.download_repo, name='home'),
     path('download_repo/', views.download_repo, name='download_repo'),
-    #path(r'^keycloak/', include('django_keycloak.urls')),
+    #path(r'openid/', include('djangooidc.urls')),
 ]
 
     # path('repos', views.RepoViewSet.as_view({

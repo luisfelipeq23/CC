@@ -6,6 +6,7 @@ services:
     build: ./frontend_db/
     hostname: cc_frontend_db_host
     container_name: cc_frontend_db
+    image: cc_frontend_db
     restart: always
     env_file:
      - .env
@@ -16,15 +17,16 @@ services:
       - POSTGRES_PASSWORD:${POSTGRES_PASSWORD}
     labels:
       - cc_frontend_db
-    ports:
-      - 5432
     networks:
       - cc_backend
+    ports:
+      - 5432
     command: postgres
   cc_keycloak_db:
     build: ./keycloak_db/
     hostname: cc_keycloak_db_host
     container_name: cc_keycloak_db
+    image: cc_keycloak_db
     restart: always
     env_file:
       .env
@@ -35,16 +37,17 @@ services:
       - POSTGRES_PASSWORD:${POSTGRES_PASSWORD}
     labels:
       - cc_keycloak_db
-    ports:
-      - 5432
     networks:
       - cc_backend
+    ports:
+      - 5432
     command: postgres
 # Services
   cc_keycloak:
     build: ./keycloak/
     hostname: cc_keycloak_host
     container_name: cc_keycloak
+    image: cc_keycloak
     restart: always
     environment:
       - KEYCLOAK_CREATE_ADMIN_USER:=true
@@ -69,17 +72,17 @@ services:
         condition: service_started
     labels:
       - cc_keycloak
+    networks:
+      - cc_backend
     ports: 
       - 8080:8080
       - 8443:8443
-    networks:
-      - cc_backend
-      - cc_frontend
     command: start-dev
   # cc_keycloak_rest_api:
   #   build: ./keycloak_rest_api/
   #   hostname: cc_keycloak_rest_api_host
   #   container_name: cc_keycloak_rest_api
+  #   image: cc_keycloak_rest_api
   #   restart: always
   #   environment:
   #     - PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -104,6 +107,7 @@ services:
     build: ./frontend/
     hostname: cc_frontend_host
     container_name: cc_frontend
+    image: cc_frontend
     environment:
      - DJANGO_SETTINGS_MODULE:cc_proyecto.settings
     restart: always
@@ -112,11 +116,11 @@ services:
         condition: service_started
     labels:
       - cc_frontend
+    networks:
+      - cc_backend
+      - cc_frontend
     ports:
       - 8000:8000
-    networks:
-      - cc_frontend
-      - cc_backend
     volumes:
       - type: bind
         source: ./frontend
@@ -130,14 +134,15 @@ services:
     build: ./minio/
     hostname: cc_minio_host
     container_name: cc_minio
+    image: cc_minio
     restart: always
     labels:
       - cc_minio
+    networks:
+      - cc_backend
     ports:
       - 9000:9000
       - 9001:9001
-    networks:
-      - cc_backend
     command: server --address ":9000" --console-address ":9001" /data
     volumes:
       - cc_minio_volume:/data
@@ -145,6 +150,7 @@ services:
     build: ./worker/
     hostname: cc_worker_host
     container_name: cc_worker
+    image: cc_worker
     restart: always
     environment:
       - PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -155,21 +161,22 @@ services:
         condition: service_started
     labels:
       - cc_worker
-    ports:
-      - 3000:3000
     networks:
       - cc_backend
+    ports:
+      - 3000:3000
     volumes:
       - type: bind
         source: ./worker
         target: /CC/CC/worker
     command: bash -c "cd /CC/CC && source /CC/CC/worker/cc_venv_worker/bin/activate && 
                       pip3 install -r /CC/CC/worker/requirements.txt --no-cache-dir --root-user-action=ignore &&
-                      cd /CC/CC/worker/volume/ && uvicorn worker_api:app --reload --port=3000"
+                      cd /CC/CC/worker/volume/ && uvicorn cc_worker_api:app --reload --port=3000"
   cc_inyector:
     build: ./inyector/
     hostname: cc_inyector_host
     container_name: cc_inyector
+    image: cc_inyector
     restart: always
     environment:
       - PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -180,35 +187,37 @@ services:
         condition: service_started
     labels:
       - cc_inyector
-    ports:
-      - 4000:4000
     networks:
       - cc_backend
+    ports:
+      - 4000:4000
     volumes:
       - type: bind
         source: ./inyector
         target: /CC/CC/inyector
     command: bash -c "cd /CC/CC && source /CC/CC/inyector/cc_venv_inyector/bin/activate && 
                       pip3 install -r /CC/CC/inyector/requirements.txt --no-cache-dir --root-user-action=ignore &&
-                      cd /CC/CC/inyector/volume/ && uvicorn cc_inyector_api:app --reload --port=3000"
+                      cd /CC/CC/inyector/volume/ && python3 cc_inyector.py"
   cc_zookeeper:
     build: ./zookeeper/
     hostname: cc_zookeeper_host
     container_name: cc_zookeeper
+    image: cc_zookeeper
     restart: always
     labels:
       - cc_zookeeper
+    networks:
+      - cc_backend
     ports:
       - 2181:2181
     environment:
       ZOO_MY_ID: 1
-      ZOO_SERVERS: server.1=zookeeper:2888:3888;2181
-    networks:
-        - cc_backend
+      ZOO_SERVERS: server.1=cc_zookeeper:2888:3888;2181
   cc_kafka:
     build: ./kafka/
     hostname: cc_kafka_host
     container_name: cc_kafka
+    image: cc_kafka
     restart: always
     environment:
       KAFKA_USERNAME: cc_kafka_admin
@@ -218,10 +227,10 @@ services:
         condition: service_started
     labels:
       - cc_kafka
-    ports:
-      - 9092:9092
     networks:
       - cc_backend
+    ports:
+     - 9092:9092
 networks:
   cc_backend:
     name: cc_backend
@@ -235,6 +244,24 @@ volumes:
   cc_worker_volume:
     name: cc_worker_vol
 
+  # cc_kafka_cliente:
+  #   build: ./kafka_cliente/
+  #   hostname: cc_kafka_cliente_host
+  #   container_name: cc_kafka_cliente
+  #   image: cc_kafka_cliente
+  #   restart: always
+  #   depends_on:
+  #     cc_kafka:
+  #       condition: service_started
+  #   labels:
+  #     - cc_kafka_client
+  #   ports:
+  #     - 9050:9050
+  #   volumes:
+  #     - type: bind
+  #       source: ./kafka_cliente
+  #       target: /CC/CC/kafka_cliente
+  #   command: bash -c "cd /CC/CC/kafka_cliente/volume/ && python3 kafka_main.py"
   # cc_kafka_ui:
   #   image: provectuslabs/kafka-ui
   #   container_name: cc_kafkaui
@@ -249,25 +276,7 @@ volumes:
   #     - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=cc_kafka:9092
   #   networks:
   #     - cc_backend
-  # cc_kafka_client:
-  #   build: ./kafka_client/
-  #   hostname: cc_kafka_client_host
-  #   container_name: cc_kafka_client
-  #   restart: always
-  #   depends_on:
-  #     cc_kafka:
-  #       condition: service_started
-  #   labels:
-  #     - cc_kafka_client
-  #   ports:
-  #     - 9050:9050
-  #   networks:
-  #     - cc_backend
-  #   volumes:
-  #     - type: bind
-  #       source: ./kafka_client
-  #       target: /CC/CC/kafka_client
-  #   command: bash -c "cd /CC/CC/kafka_client/volume/ && python3 kafka_main.py"
+  
   # cc_oauth2_proxy:
   #   build: ./oauth2_proxy/
   #   hostname: cc_oauth2_proxy_host

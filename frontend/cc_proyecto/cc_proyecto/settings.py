@@ -28,7 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -40,8 +39,41 @@ INSTALLED_APPS = [
     'rest_framework',
     'cc_proyecto',
     "corsheaders",
-    
 ]
+
+# AUTHENTICATION_BACKENDS = [
+#         'django.contrib.auth.backends.ModelBackend',
+#         'djangooidc.backends.OpenIdConnectBackend',
+#     ]
+
+# LOGIN_URL = 'openid'
+
+# OIDC_DYNAMIC_CLIENT_REGISTRATION_DATA = {
+#     "application_type": "web",
+#     "contacts": ["lfqueram@posgrado.upv.es"],
+#     "redirect_uris": ["http://cc_frontend_host:8080/openid/callback/login/", ],
+#     "post_logout_redirect_uris": ["http://cc_frontend_host:8000/openid/callback/logout/", ]
+# }
+
+# OIDC_DEFAULT_BEHAVIOUR = {
+#     "response_type": "code",
+#     "scope": ["openid", "profile", "email", "address", "phone"],
+# }
+
+# OIDC_PROVIDERS = {
+#     "Keycloak": {
+#         "srv_discovery_url": "https://sts.windows.net/aaaaaaaa-aaaa-1111-aaaa-xxxxxxxxxxxxx/",
+#         "behaviour": OIDC_DEFAULT_BEHAVIOUR,
+#         "client_registration": {
+#             "client_id": "cc_cliente",
+#             "client_secret": "fu84AacHUShCwm5fPnh67IesjK1NNumx",
+#             "redirect_uris": ["http://localhost:8000/openid/callback/login/"],
+#             "post_logout_redirect_uris": ["http://localhost:8000/openid/callback/logout/"],
+#             "token_endpoint_auth_method": "client_secret_post",
+#         }
+#     }
+# }
+# 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -83,7 +115,7 @@ DATABASES = {
         'NAME': "cc_cloud_db",
         'USER': "cc_cloud_user",
         'PASSWORD': "cc_cl0ud_p455",
-        'HOST': 'cc_frontend_db',#'192.168.32.2',
+        'HOST': 'cc_frontend_db_host',
         'PORT': '5432',
     }
 }

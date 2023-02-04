@@ -1,6 +1,7 @@
 FROM minio/minio
 EXPOSE 9000
 EXPOSE 9090
+RUN mkdir /repo_descargas/
 ENV MINIO_ROOT_USER=cc_minio_user
 ENV MINIO_ROOT_PASSWORD=cc_m1n10_p455
 ENV MINIO_STORAGE_USE_HTTPS=False
