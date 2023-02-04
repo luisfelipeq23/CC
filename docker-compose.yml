@@ -171,7 +171,7 @@ services:
         target: /CC/CC/worker
     command: bash -c "cd /CC/CC && source /CC/CC/worker/cc_venv_worker/bin/activate && 
                       pip3 install -r /CC/CC/worker/requirements.txt --no-cache-dir --root-user-action=ignore &&
-                      cd /CC/CC/worker/volume/ && uvicorn cc_worker_api:app --reload --port=3000"
+                      cd /CC/CC/worker/volume/ && uvicorn cc_worker_api:app --reload --host 0.0.0.0 --port=3000"
   cc_inyector:
     build: ./inyector/
     hostname: cc_inyector_host
@@ -243,39 +243,6 @@ volumes:
     name: cc_minio_vol
   cc_worker_volume:
     name: cc_worker_vol
-
-  # cc_kafka_cliente:
-  #   build: ./kafka_cliente/
-  #   hostname: cc_kafka_cliente_host
-  #   container_name: cc_kafka_cliente
-  #   image: cc_kafka_cliente
-  #   restart: always
-  #   depends_on:
-  #     cc_kafka:
-  #       condition: service_started
-  #   labels:
-  #     - cc_kafka_client
-  #   ports:
-  #     - 9050:9050
-  #   volumes:
-  #     - type: bind
-  #       source: ./kafka_cliente
-  #       target: /CC/CC/kafka_cliente
-  #   command: bash -c "cd /CC/CC/kafka_cliente/volume/ && python3 kafka_main.py"
-  # cc_kafka_ui:
-  #   image: provectuslabs/kafka-ui
-  #   container_name: cc_kafkaui
-  #   ports:
-  #     - 8080:8080
-  #   restart: always
-  #   depends_on:
-  #     cc_kafka:
-  #       condition: service_started
-  #   environment:
-  #     - KAFKA_CLUSTERS_0_NAME=local
-  #     - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=cc_kafka:9092
-  #   networks:
-  #     - cc_backend
   
   # cc_oauth2_proxy:
   #   build: ./oauth2_proxy/

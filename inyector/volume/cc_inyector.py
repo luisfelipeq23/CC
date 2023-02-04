@@ -1,21 +1,18 @@
 import kafka as k
 import requests
 import tracemalloc
-from fastapi import FastAPI
+import json
 
 tracemalloc.start()
-
-url = "http://cc_worker:3000/procesar_tarea/"
-
-# app = FastAPI()
-
-# @app.post("/enviar_peticion")
-# async 
+#https://github.com/acheong08/ChatGPT.git
 def enviar_peticion_worker(datos):
+    url = "http://cc_worker:3000/procesar_tarea/"
     try:
-        payload = "{payload:" + str(datos) + "}"
-        resp = requests.post(url,json=payload)
+        url = datos
+        print(url)
+        resp = requests.post(url,json=url)
         if resp.status_code != 200:
+            print(resp.json())
             print("Solicitud no enviada")
         else:
             print("Solicitud enviada con éxito")
@@ -28,24 +25,11 @@ def main():
         consumidor.subscribe("pendientes")
         for msj in consumidor:
             if msj:
-                enviar_peticion_worker(msj)
+                datos = msj.value
+                datos = datos.decode('utf-8')
+                print(datos)
+                enviar_peticion_worker(datos)
     except Exception as ex:
         print(ex)
 
 main()
-
-
-
-# response = requests.get(url)
-
-# if response.status_code == 200:
-#     data = response.json()
-#     print(data)
-# else:
-#     print("Request failed with status code:", response.status_code)
-
-# while(correr):
-#     resultado = consumidor.poll(timeout_ms=5.0)
-#     if(resultado != ""):
-#         print(resultado)
-#         time.sleep(1800)

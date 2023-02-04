@@ -1,11 +1,9 @@
 from django.shortcuts import render
 from .models import Repo
 from .forms import RepoForm
-import requests
 import json
 import os
 from .kafka_producer import kafka_productor
-# from .login import login as l
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 CLIENT_SECRET = ""
@@ -26,15 +24,14 @@ def download_repo(request):
     if request.method == 'POST':
         form = RepoForm(request.POST)
         if form.is_valid():
-            repo_name=form.cleaned_data['nombre_repo']
             repo_url=form.cleaned_data['url_repo']
-            repo = Repo(nombre_repo=repo_name, url_repo=repo_url)
+            repo = Repo(url_repo=repo_url)
 
             # Salvar repositorio a BD
             repo.save()
             
             # Envío de mensaje a Kafk""
-            kafka_prod = kafka_productor(repo_name, repo_url, "pendientes", "cc_kafka:9092")
+            kafka_prod = kafka_productor(repo_url, "pendientes", "cc_kafka:9092")
             kafka_prod.enviar_mensaje_kafka()
             return render(request, 'RepoForm.html', {'form': RepoForm()})
         return render(request, 'RepoForm.html', {'form': form, "error": "Complete los datos requeridos"})
