@@ -1,22 +1,35 @@
-from fastapi import FastAPI
-from fastapi import FastAPI, BackgroundTasks
-from kafka import KafkaConsumer
+import kafka as k
+import requests
 import tracemalloc
+import json
 
 tracemalloc.start()
+#https://github.com/acheong08/ChatGPT.git
+def enviar_peticion_worker(datos):
+    url = "http://cc_worker:3000/procesar_tarea/"
+    try:
+        url = datos
+        print(url)
+        resp = requests.post(url,json=url)
+        if resp.status_code != 200:
+            print(resp.json())
+            print("Solicitud no enviada")
+        else:
+            print("Solicitud enviada con éxito")
+    except Exception as e:
+        print(e)
 
-app = FastAPI()
+def main():
+    try:
+        consumidor = k.KafkaConsumer("pendientes", bootstrap_servers="cc_kafka:9092")
+        consumidor.subscribe("pendientes")
+        for msj in consumidor:
+            if msj:
+                datos = msj.value
+                datos = datos.decode('utf-8')
+                print(datos)
+                enviar_peticion_worker(datos)
+    except Exception as ex:
+        print(ex)
 
-@app.get("/escuchar/{kafka_url}/{topic}")
-async def escuchar_kafka(kafka_url: str, topic: str):
-    background_task = BackgroundTasks()
-    consumidor = await KafkaConsumer(topic, bootstrap_servers=kafka_url)
-    background_task.add_task(consumir_mensajes, consumidor)
-    return {"message": "Escuchando mensajes del Topic {} en {}".format(topic.decode('utf-8'), kafka_url)}
-
-def consumir_mensajes(consumidor):
-    for msj in consumidor:
-        print(msj.value.decode())
-
-while(True):
-    escuchar_kafka('cc_kafka_host:9092','pendientes')
+main()

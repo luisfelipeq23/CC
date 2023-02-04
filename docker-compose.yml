@@ -78,31 +78,6 @@ services:
       - 8080:8080
       - 8443:8443
     command: start-dev
-  # cc_keycloak_rest_api:
-  #   build: ./keycloak_rest_api/
-  #   hostname: cc_keycloak_rest_api_host
-  #   container_name: cc_keycloak_rest_api
-  #   image: cc_keycloak_rest_api
-  #   restart: always
-  #   environment:
-  #     - PIP_DISABLE_PIP_VERSION_CHECK=1
-  #     - PYTHONDONTWRITEBYTECODE=1
-  #     - PYTHONUNBUFFERED=1
-  #   depends_on:
-  #     cc_keycloak:
-  #       condition: service_started
-  #   labels:
-  #     - cc_keycloak_rest_api
-  #   ports:
-  #     - 8081:8081
-  #   networks:
-  #     - cc_backend
-  #   volumes:
-  #     - type: bind
-  #       source: ./keycloak_rest_api
-  #       target: /CC/CC/keycloak_rest_api
-  #   command: bash -c "pip3 install -r /CC/CC/keycloak_rest_api/requirements.txt --no-cache-dir --root-user-action=ignore &&
-  #                     cd /CC/CC/keycloak_rest_api/volume/ && python3 entrypoint.py"
   cc_frontend:
     build: ./frontend/
     hostname: cc_frontend_host
@@ -269,3 +244,28 @@ volumes:
   #     - OAUTH2_PROXY_EMAIL_DOMAINS=*
   #     - OAUTH2_PROXY_PROVIDER=keycloak-oidc #
   #     - OAUTH2_PROXY_OIDC_ISSUER_URL=http://172.31.0.7:8080/realms/master #172.31.0.7
+  # cc_keycloak_rest_api:
+  #   build: ./keycloak_rest_api/
+  #   hostname: cc_keycloak_rest_api_host
+  #   container_name: cc_keycloak_rest_api
+  #   image: cc_keycloak_rest_api
+  #   restart: always
+  #   environment:
+  #     - PIP_DISABLE_PIP_VERSION_CHECK=1
+  #     - PYTHONDONTWRITEBYTECODE=1
+  #     - PYTHONUNBUFFERED=1
+  #   depends_on:
+  #     cc_keycloak:
+  #       condition: service_started
+  #   labels:
+  #     - cc_keycloak_rest_api
+  #   ports:
+  #     - 8081:8081
+  #   networks:
+  #     - cc_backend
+  #   volumes:
+  #     - type: bind
+  #       source: ./keycloak_rest_api
+  #       target: /CC/CC/keycloak_rest_api
+  #   command: bash -c "pip3 install -r /CC/CC/keycloak_rest_api/requirements.txt --no-cache-dir --root-user-action=ignore &&
+  #                     cd /CC/CC/keycloak_rest_api/volume/ && python3 entrypoint.py"
